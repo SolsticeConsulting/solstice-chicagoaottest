@@ -1,5 +1,8 @@
-const request = require('request');
 const querystring = require('querystring');
+const requestpromise = require('request-promise');
+
+
+
 
 const geojson = {
     "type": "Feature",
@@ -15,10 +18,32 @@ const geojson = {
     }
 };
 
+
+class CascadeNearbyAOT {
+    static async getnearby(qstring) {
+
+        let options = {
+            uri: 'https://api.arrayofthings.org/api/nodes?location=' + qstring,
+            method: 'GET',
+            json: true
+        };
+
+        return requestpromise(options)
+            .then((parsedbody) => {
+                console.log(parsedbody);
+                return(parsedbody);
+        });
+    }
+}
+
+
 const distance = 5000;
 const qstring = querystring.escape("distance:"+distance.toString()+":"+JSON.stringify(geojson));
 
-request('https://api.arrayofthings.org/api/nodes?location='+qstring, function (error, response, body) {
-    bodyObj = JSON.parse(body);
-    console.log(bodyObj);
-});
+CascadeNearbyAOT.getnearby(qstring)
+    .then((response) => {
+        console.log(JSON.stringify(response,null,4));
+    })
+    .catch((err) => {
+        console.log(err);
+    });
